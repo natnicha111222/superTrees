@@ -10,7 +10,7 @@
 |---|---|
 | แอป | Ionic + Angular 21+ (standalone, signals) — เว็บ · Capacitor (มือถือ) ภายหลัง |
 | micro frontend | Native Federation (`@angular-architects/native-federation`) |
-| หลังบ้าน | Bun + Hono + Drizzle ORM + zod — microservice แยก repo |
+| หลังบ้าน | Bun + Hono + Drizzle ORM + zod — microservice แยกโฟลเดอร์ |
 | Auth / DB / ไฟล์ | Supabase (Auth, Postgres + PostGIS, Storage) |
 | gateway | Kong (DB-less) |
 | event | RabbitMQ |
@@ -18,7 +18,7 @@
 
 ## โครงสร้าง
 
-root นี้เป็น repo เอกสารกลาง · โฟลเดอร์ `st-*` แต่ละตัวเป็น git repo แยก — รายชื่อ/port ที่ [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) · สถาปัตยกรรมที่ [ARCHITECTURE.md](ARCHITECTURE.md)
+git repo เดียว: root = เอกสารกลาง · โฟลเดอร์ `st-*` = โค้ดแต่ละส่วน (แต่ละโฟลเดอร์ติดตั้ง/รันแยกกัน ไม่ใช้ workspaces) — รายชื่อ/port ที่ [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) · สถาปัตยกรรมที่ [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ## เครื่องมือที่ต้องติดตั้ง
 

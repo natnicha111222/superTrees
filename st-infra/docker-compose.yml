@@ -1,0 +1,43 @@
+# Kong (API gateway) + RabbitMQ สำหรับ dev — Supabase แยกรันด้วย `npx supabase start`
+# port ผูก 127.0.0.1 เท่านั้น (CODE_STANDARDS 15) · ค่าลับอ่านจาก .env (copy จาก .env.example)
+name: supertrees
+
+services:
+  kong:
+    image: kong:3.9
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+      KONG_ADMIN_LISTEN: "off"
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+    volumes:
+      - ./kong/kong.yml:/kong/kong.yml:ro
+    ports:
+      - "127.0.0.1:8000:8000"
+    # dev: service รันบนเครื่อง (npm run dev:backend) → Kong เรียกผ่าน host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: supertrees
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?ตั้ง RABBITMQ_PASSWORD ใน st-infra/.env}
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672" # management UI — local เท่านั้น
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      retries: 6
+
+volumes:
+  rabbitmq-data:

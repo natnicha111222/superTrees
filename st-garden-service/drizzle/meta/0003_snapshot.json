@@ -1,0 +1,549 @@
+{
+  "id": "cad04c2d-a21b-46aa-93a3-d114d470d054",
+  "prevId": "6021a4db-171b-4aba-841e-d3b6f69d5f84",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "garden.planting_plan_trees": {
+      "name": "planting_plan_trees",
+      "schema": "garden",
+      "columns": {
+        "plan_id": {
+          "name": "plan_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tree_no": {
+          "name": "tree_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "row_no": {
+          "name": "row_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "col_no": {
+          "name": "col_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "manual": {
+          "name": "manual",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "geom": {
+          "name": "geom",
+          "type": "geometry(Point, 4326)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "planting_plan_trees_geom_gist": {
+          "name": "planting_plan_trees_geom_gist",
+          "columns": [
+            {
+              "expression": "geom",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gist",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "planting_plan_trees_plan_id_planting_plans_id_fk": {
+          "name": "planting_plan_trees_plan_id_planting_plans_id_fk",
+          "tableFrom": "planting_plan_trees",
+          "tableTo": "planting_plans",
+          "schemaTo": "garden",
+          "columnsFrom": [
+            "plan_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "planting_plan_trees_plan_id_tree_no_pk": {
+          "name": "planting_plan_trees_plan_id_tree_no_pk",
+          "columns": [
+            "plan_id",
+            "tree_no"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "garden.planting_plans": {
+      "name": "planting_plans",
+      "schema": "garden",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "parcel_id": {
+          "name": "parcel_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "boundary": {
+          "name": "boundary",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "geom": {
+          "name": "geom",
+          "type": "geometry(Polygon, 4326)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "spacing_m": {
+          "name": "spacing_m",
+          "type": "numeric(8, 3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "angle_deg": {
+          "name": "angle_deg",
+          "type": "numeric(9, 4)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offset_x_m": {
+          "name": "offset_x_m",
+          "type": "numeric(9, 3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "offset_y_m": {
+          "name": "offset_y_m",
+          "type": "numeric(9, 3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "removed": {
+          "name": "removed",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "extras": {
+          "name": "extras",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "utm_epsg": {
+          "name": "utm_epsg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "area_sqm": {
+          "name": "area_sqm",
+          "type": "numeric(14, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tree_count": {
+          "name": "tree_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "row_count": {
+          "name": "row_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "planting_plans_owner_parcel_idx": {
+          "name": "planting_plans_owner_parcel_idx",
+          "columns": [
+            {
+              "expression": "owner_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "parcel_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "planting_plans_geom_gist": {
+          "name": "planting_plans_geom_gist",
+          "columns": [
+            {
+              "expression": "geom",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gist",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "garden.tree_survey_trees": {
+      "name": "tree_survey_trees",
+      "schema": "garden",
+      "columns": {
+        "survey_id": {
+          "name": "survey_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tree_no": {
+          "name": "tree_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "row_no": {
+          "name": "row_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "col_no": {
+          "name": "col_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pixel_x": {
+          "name": "pixel_x",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pixel_y": {
+          "name": "pixel_y",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nearest_tree_no": {
+          "name": "nearest_tree_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nearest_distance_px": {
+          "name": "nearest_distance_px",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nearest_distance_m": {
+          "name": "nearest_distance_m",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "geom": {
+          "name": "geom",
+          "type": "geometry(Point, 4326)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "tree_survey_trees_geom_gist": {
+          "name": "tree_survey_trees_geom_gist",
+          "columns": [
+            {
+              "expression": "geom",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gist",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "tree_survey_trees_survey_id_tree_surveys_id_fk": {
+          "name": "tree_survey_trees_survey_id_tree_surveys_id_fk",
+          "tableFrom": "tree_survey_trees",
+          "tableTo": "tree_surveys",
+          "schemaTo": "garden",
+          "columnsFrom": [
+            "survey_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "tree_survey_trees_survey_id_tree_no_pk": {
+          "name": "tree_survey_trees_survey_id_tree_no_pk",
+          "columns": [
+            "survey_id",
+            "tree_no"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "garden.tree_surveys": {
+      "name": "tree_surveys",
+      "schema": "garden",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "parcel_id": {
+          "name": "parcel_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image_path": {
+          "name": "image_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image_width": {
+          "name": "image_width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image_height": {
+          "name": "image_height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "boundary_px": {
+          "name": "boundary_px",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "control_points": {
+          "name": "control_points",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scale_source": {
+          "name": "scale_source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scale_is_estimate": {
+          "name": "scale_is_estimate",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "meters_per_pixel": {
+          "name": "meters_per_pixel",
+          "type": "numeric(12, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assumed_spacing_m": {
+          "name": "assumed_spacing_m",
+          "type": "numeric(8, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "georef_rms_error_m": {
+          "name": "georef_rms_error_m",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "utm_epsg": {
+          "name": "utm_epsg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tree_count": {
+          "name": "tree_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stats": {
+          "name": "stats",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "grid_lines": {
+          "name": "grid_lines",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "tree_surveys_owner_parcel_idx": {
+          "name": "tree_surveys_owner_parcel_idx",
+          "columns": [
+            {
+              "expression": "owner_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "parcel_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    }
+  },
+  "enums": {},
+  "schemas": {
+    "garden": "garden"
+  },
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

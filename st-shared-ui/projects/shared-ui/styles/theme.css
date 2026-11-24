@@ -1,0 +1,64 @@
+/*
+ * @supertrees/shared-ui — theme token กลาง (รายละเอียด/วิธีใช้: THEME.md)
+ * หน้าและ component ทุกตัวใช้ var(--st-*) หรือสีของ Ionic (color="primary") เท่านั้น — ห้ามใส่รหัสสีเอง
+ * shell โหลดไฟล์นี้ครั้งเดียวใน angular.json → ทุก remote ได้ด้วย (อยู่ในหน้าเดียวกัน)
+ */
+:root {
+  /* แบรนด์ superTrees — เขียวใบไม้ + น้ำตาลดิน */
+  --st-color-primary: #2f7d4f;
+  --st-color-primary-contrast: #ffffff;
+  --st-color-primary-shade: #296e46;
+  --st-color-primary-tint: #448a61;
+  --st-color-secondary: #8a6a3f;
+  --st-color-secondary-contrast: #ffffff;
+  --st-color-secondary-shade: #795d37;
+  --st-color-secondary-tint: #967952;
+
+  --st-color-success: #2e8540;
+  --st-color-warning: #c98a00;
+  --st-color-danger: #c62828;
+  --st-color-text: #1c2a21;
+  --st-color-text-muted: #5b6b61;
+  --st-color-surface: #ffffff;
+  --st-color-surface-alt: #f3f6f2;
+  --st-color-border: #d5ddd6;
+
+  /* แผนที่/ภาพวิเคราะห์ (TASK-010) — ต้องเห็นชัดบนภาพถ่ายทางอากาศ */
+  --st-viz-tree: #ff3b30;
+  --st-viz-tree-selected: #00e5ff;
+  --st-viz-tree-stroke: #ffffff;
+  --st-viz-label: #ffeb3b;
+  --st-viz-label-bg: rgba(0, 0, 0, 0.65);
+  --st-viz-grid-row: #00e676;
+  --st-viz-grid-col: #ff9800;
+  --st-viz-boundary: #ffd600;
+  --st-viz-control-point: #e040fb;
+  --st-viz-canvas-bg: #111111;
+
+  /* ระยะ / มุม */
+  --st-space-1: 4px;
+  --st-space-2: 8px;
+  --st-space-3: 12px;
+  --st-space-4: 16px;
+  --st-space-6: 24px;
+  --st-radius: 8px;
+  --st-font-family: 'Sarabun', 'Noto Sans Thai', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* ผูกเข้ากับ Ionic */
+  --ion-font-family: var(--st-font-family);
+  --ion-color-primary: var(--st-color-primary);
+  --ion-color-primary-rgb: 47, 125, 79;
+  --ion-color-primary-contrast: var(--st-color-primary-contrast);
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: var(--st-color-primary-shade);
+  --ion-color-primary-tint: var(--st-color-primary-tint);
+  --ion-color-secondary: var(--st-color-secondary);
+  --ion-color-secondary-rgb: 138, 106, 63;
+  --ion-color-secondary-contrast: var(--st-color-secondary-contrast);
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: var(--st-color-secondary-shade);
+  --ion-color-secondary-tint: var(--st-color-secondary-tint);
+  --ion-color-success: var(--st-color-success);
+  --ion-color-warning: var(--st-color-warning);
+  --ion-color-danger: var(--st-color-danger);
+}

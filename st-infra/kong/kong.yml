@@ -1,0 +1,67 @@
+# Kong DB-less — route ต้องตรงกับ API_ROUTES.md ของ workspace
+# ตั้งชื่อ path ตามโดเมน (ไม่ผูกชื่อ service) · strip_path: false = service ได้ path เต็ม
+# dev: upstream = service บนเครื่องผ่าน host.docker.internal (ตอน deploy เปลี่ยนเป็นชื่อ container)
+#
+# ⚠️ MOCK-006: ยังไม่ตรวจ JWT ที่ Kong — รอ CONF-002 (TASK-003) · service ตรวจเองตาม AUTH_MODE
+_format_version: "3.0"
+
+services:
+  - name: parcel-service
+    url: http://host.docker.internal:3001
+    routes:
+      - name: parcels
+        paths: [/api/v1/parcels]
+        strip_path: false
+
+  - name: listing-service
+    url: http://host.docker.internal:3002
+    routes:
+      - name: listings
+        paths: [/api/v1/listings]
+        strip_path: false
+
+  - name: garden-service
+    url: http://host.docker.internal:3003
+    routes:
+      - name: gardens
+        paths: [/api/v1/gardens, /api/v1/tree-species]
+        strip_path: false
+
+  - name: notification-service
+    url: http://host.docker.internal:3004
+    routes:
+      - name: notifications
+        paths: [/api/v1/notifications]
+        strip_path: false
+
+plugins:
+  # CORS แบบ allowlist origin (CODE_STANDARDS 15) — shell 4200 + remote 4201–4203 ตอนเปิดเดี่ยว
+  - name: cors
+    config:
+      origins:
+        - http://localhost:4200
+        - http://localhost:4201
+        - http://localhost:4202
+        - http://localhost:4203
+      methods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
+      headers: [Authorization, Content-Type, X-Request-Id]
+      exposed_headers: [X-Request-Id]
+      credentials: false
+      max_age: 3600
+
+  # ทิ้ง header ตัวตนที่ client ส่งมาเอง (ARCHITECTURE.md)
+  - name: request-transformer
+    config:
+      remove:
+        headers: [X-User-Id, X-User-Role, X-User-Email]
+
+  - name: rate-limiting
+    config:
+      minute: 300
+      policy: local
+
+  # body ของ API เป็น JSON เล็ก ๆ — ไฟล์อัปโหลดตรงไป Storage
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 1
+      size_unit: megabytes

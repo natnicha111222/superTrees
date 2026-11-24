@@ -1,5 +1,4 @@
-# แต่ละ st-* เป็น git repo แยก
-/st-*/
+# ทุก st-* อยู่ใน repo นี้ (แต่ละโฟลเดอร์มี .gitignore ของตัวเองด้วย)
 .env
 .env.*
 !.env.example

@@ -1,0 +1,21 @@
+{
+  "apiBaseUrl": "http://localhost:8000",
+  "demoParcelId": "11111111-1111-4111-8111-111111111111",
+  "map": {
+    "satellite": {
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      "attribution": "Imagery © Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+      "maxZoom": 18
+    },
+    "labels": {
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+      "attribution": "Labels © Esri",
+      "maxZoom": 18
+    },
+    "initialCenter": [
+      100.99,
+      13.4
+    ],
+    "initialZoom": 5
+  }
+}

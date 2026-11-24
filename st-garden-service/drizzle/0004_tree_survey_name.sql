@@ -1,0 +1,1 @@
+ALTER TABLE "garden"."tree_surveys" ADD COLUMN "name" text;

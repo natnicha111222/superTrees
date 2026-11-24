@@ -1,0 +1,14 @@
+{
+  "name": "st-infra",
+  "private": true,
+  "description": "superTrees — config + สคริปต์รันระบบสำหรับ dev",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs all",
+    "dev:frontend": "node scripts/dev.mjs frontend",
+    "dev:backend": "node scripts/dev.mjs backend"
+  }
+}

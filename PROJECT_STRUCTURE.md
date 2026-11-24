@@ -4,7 +4,7 @@
 
 ## 0. การตัดสินใจหลัก (ผู้ใช้กำหนด 2026-11-23 — ห้ามเปลี่ยนเอง)
 
-- **multirepo**: 1 โฟลเดอร์ `st-*` = 1 git repo · root เป็น repo เอกสารกลาง ไม่มีโค้ด
+- **git repo เดียว** (เปลี่ยนจาก multirepo 2026-11-24 · STR-007): root + ทุกโฟลเดอร์ `st-*` อยู่ใน repo `superTrees` · แต่ละ `st-*` ยังเป็นหน่วยอิสระ (package/lockfile/`.gitignore` ของตัวเอง, ไม่ใช้ npm/bun workspaces, ไม่ import ข้ามโฟลเดอร์ — ของร่วมผ่าน tarball ใน `vendor/`)
 - **micro frontend ด้วย Native Federation** (`@angular-architects/native-federation`) — shell + remote ต่อโดเมน
 - **หลังบ้าน Bun + Hono + Drizzle** (ไม่ใช้ Go — [CONF-004](conf/CONF-004.md))
 - **ทำเว็บก่อน** (2026-11-23): ยังไม่ใช้ Capacitor / ไม่มี `android/` `ios/` — มือถือพักไว้ที่ TASK-009
@@ -13,7 +13,7 @@
 ## 1. แผนผัง workspace
 
 ```
-D:\superTrees\                  ← repo "superTrees" (เอกสารกลาง)
+D:\superTrees\                  ← git repo "superTrees" (เอกสารกลาง + โค้ดทุกโฟลเดอร์)
 ├── CLAUDE.md  README.md  PROJECT_STRUCTURE.md  ARCHITECTURE.md
 ├── AUTH_ROLE.md  API_ROUTES.md  API_ROUTES_HISTORY.md  EVENTS.md
 ├── TASKS.md  BUGS.md  MOCKS.md  CODE_STANDARDS.md
@@ -141,3 +141,4 @@ public/config.json      ← runtime config (apiBaseUrl ฯลฯ) อ่าน�
 | STR-004 | 2026-11-23 | st-infra: `package.json` + `scripts/dev.mjs` (`npm run dev:backend` / `dev:frontend` / `dev`) · ข้อตกลงทุก repo มี script `dev` ฟัง `PORT` | ผู้ใช้ขอสคริปต์รันทุก service พร้อมกัน · วางใน st-infra เพราะ root เป็นเอกสารอย่างเดียว |
 | STR-005 | 2026-11-23 | TASK-002: โครงทุก repo (Bun service ×4, Angular app ×4, library, contracts, infra) · ของร่วมแจกด้วย tarball ใน `vendor/` · remote มี `app.*` สำหรับรันเดี่ยว · shell มี `public/config.json` | ผู้ใช้เลือก tarball ใน vendor/ (ไม่ใช้ registry) |
 | STR-006 | 2026-11-24 | st-garden-service: `src/services/grid/core.ts` แกนกริดร่วมของนับจากภาพ + วางแผนปลูก · `src/services/planting/compare.ts` · st-mfe-garden: `components/tree-survey-editor-panel.component.ts` (แผงแก้ไขใช้ร่วม 2 หน้า), `pages/plan-compare.page.ts` | ผู้ใช้ขอรวมการคำนวณและเชื่อมสองฟีเจอร์ (TASK-012) |
+| STR-007 | 2026-11-24 | รวมเป็น git repo เดียว: ลบ `.git` ใน `st-*` ทั้ง 11 ตัว (ยังไม่มี commit) · เอา `/st-*/` ออกจาก root `.gitignore` · กฎ "ห้าม workspaces / ห้าม import ข้ามโฟลเดอร์ / ของร่วมผ่าน `vendor/`" คงเดิม | ผู้ใช้ต้องการ commit/push ทุกอย่างพร้อมกันครั้งเดียว |

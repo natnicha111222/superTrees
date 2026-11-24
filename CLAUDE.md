@@ -58,12 +58,13 @@
 | 🧪 ของจำลอง/ทางลัดที่ต้องกลับมาทำจริง | [MOCKS.md](MOCKS.md) |
 | ⚙️ ภาพรวม, เครื่องมือที่ต้องติดตั้ง, วิธีรัน | [README.md](README.md) · `st-infra/README.md` |
 
-## Multirepo
+## Git repo เดียว แต่โฟลเดอร์แยกอิสระ
 
-- `D:\superTrees` = repo **workspace** (เอกสารกลางเท่านั้น ไม่มีโค้ด) · โฟลเดอร์ `st-*` แต่ละตัวเป็น **git repo แยก** (root `.gitignore` ignore ไว้)
-- **ห้ามทำเป็น monorepo/workspaces** (npm/bun/nx workspaces) และห้าม import ข้าม repo ด้วย path สัมพัทธ์ (`../st-xxx`) — ของร่วมใช้ผ่าน package ที่มีเวอร์ชัน (`@supertrees/contracts`, `@supertrees/shared-ui`) ติดตั้งจาก **tarball ใน `vendor/` ของ repo นั้น** (`npm run pack:vendor` ใน repo ต้นทาง) · **ห้าม `file:` ชี้โฟลเดอร์/symlink** (Angular DI แตกเป็น 2 ชุด → `NG0203`) · แก้ package ร่วมแล้วต้องขึ้นเวอร์ชันเสมอ
+- `D:\superTrees` = **git repo เดียว** เก็บทั้งเอกสารกลาง (root) และโค้ดทุกโฟลเดอร์ `st-*` (ผู้ใช้ตัดสินใจ 2026-11-24 · STR-007) — commit/push พร้อมกันได้ในครั้งเดียว · ในเอกสาร "repo" ของ `st-*` หมายถึงโฟลเดอร์นั้น · ห้าม `git init` ในโฟลเดอร์ `st-*`
+- แต่ละ `st-*` ยังเป็น**หน่วยอิสระ**: `package.json`/lockfile/`node_modules`/`.gitignore` ของตัวเอง
+- **ห้ามทำเป็น npm/bun workspaces** (npm/bun/nx workspaces) และห้าม import ข้าม repo ด้วย path สัมพัทธ์ (`../st-xxx`) — ของร่วมใช้ผ่าน package ที่มีเวอร์ชัน (`@supertrees/contracts`, `@supertrees/shared-ui`) ติดตั้งจาก **tarball ใน `vendor/` ของ repo นั้น** (`npm run pack:vendor` ใน repo ต้นทาง) · **ห้าม `file:` ชี้โฟลเดอร์/symlink** (Angular DI แตกเป็น 2 ชุด → `NG0203`) · แก้ package ร่วมแล้วต้องขึ้นเวอร์ชันเสมอ
 - งานที่แก้หลาย repo: ระบุ repo + ลำดับ release ในไฟล์ task (contracts → services → shared-ui → remotes → shell) · contract เปลี่ยนแบบ breaking = major version
-- commit แยกตาม repo · commit/push เฉพาะเมื่อผู้ใช้สั่ง
+- commit/push เฉพาะเมื่อผู้ใช้สั่ง · commit เดียวแตะหลายโฟลเดอร์ได้ (ข้อความ commit ระบุโฟลเดอร์ที่แก้)
 - รัน dev ทุก repo พร้อมกัน: `cd st-infra && npm run dev:backend` / `dev:frontend` — ทุก repo ที่รันได้ต้องมี script `dev` ที่ฟัง env `PORT` · เพิ่ม/ย้าย repo หรือ port = แก้ `REPOS` ใน `st-infra/scripts/dev.mjs` ด้วย
 
 ## สถาปัตยกรรม (ย่อ — ละเอียดที่ [ARCHITECTURE.md](ARCHITECTURE.md))
