@@ -29,7 +29,7 @@
 14. ค่าลับมาจาก env เท่านั้น ห้าม hardcode ห้าม commit `.env` · `service_role` key ห้ามอยู่ในแอป/หน้าบ้านเด็ดขาด
 15. ห้าม publish port ของ service/DB/RabbitMQ management ออกนอกเครื่องตอน deploy · CORS ตั้งที่ Kong แบบ allowlist origin
 
-### มือถือ
+### มือถือ (ใช้เมื่อเริ่ม TASK-009 — ระยะนี้ทำเว็บอย่างเดียว)
 16. token เก็บใน secure storage ของอุปกรณ์ ไม่ใช่ localStorage บนมือถือ · บังคับ https · ไม่ log token
 
 ### ทั่วไป

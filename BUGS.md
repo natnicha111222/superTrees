@@ -8,4 +8,5 @@
 
 | รหัส | อาการ (ย่อ) | repo | สถานะ |
 |---|---|---|---|
-| | | | |
+| [BUG-001](bugs/BUG-001.md) | `drizzle-kit migrate` ล้ม: schema already exists | service ×4 | ✅ |
+| [BUG-002](bugs/BUG-002.md) | คอลัมน์ geometry ที่ drizzle สร้างไม่มี SRID 4326 | st-garden-service | ✅ |

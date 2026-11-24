@@ -1,6 +1,14 @@
 # AUTH_ROLE.md — login / role / สิทธิ์
 
-สถานะ: **แผน** — งานจริงอยู่ที่ [TASK-003](tasks/TASK-003.md)
+สถานะ: **แผน** — งานจริงอยู่ที่ [TASK-003](tasks/TASK-003.md) · วิธีตรวจ JWT รอ [CONF-002](conf/CONF-002.md)
+
+## ตอนนี้ (ก่อน TASK-003)
+
+- ทุก service มี `src/middleware/auth.ts` (`requireAuth`) ที่เส้นต้อง login ผ่าน · env `AUTH_MODE`:
+  - `disabled` (ค่าเริ่มต้น) → 503 `AUTH_NOT_CONFIGURED`
+  - `dev-fixed-user` → ทุก request เป็น `DEV_USER_ID` role `user` — **[MOCK-002](MOCKS.md)** · `config.ts` ไม่ยอมให้ใช้ถ้า `APP_ENV` ไม่ใช่ `local`
+- Kong ยังไม่ตรวจ JWT ([MOCK-006](MOCKS.md)) · ยังไม่มีหน้า login ใน shell
+- ทำ TASK-003: เพิ่มโหมดตรวจ JWT จริงใน `requireAuth` แล้วลบ `dev-fixed-user`
 
 ## ผู้ออก token
 

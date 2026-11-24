@@ -20,7 +20,8 @@
 - **publish หลัง commit เท่านั้น** · consumer ต้อง **idempotent** (เก็บ `eventId` ที่ประมวลผลแล้ว) · ล้มเหลวซ้ำ → DLQ ไม่วนไม่จบ
 - เปลี่ยน payload แบบ breaking = เพิ่ม `version` + รองรับทั้งสองเวอร์ชันช่วงเปลี่ยนผ่าน
 - ห้ามใส่ข้อมูลส่วนบุคคลเกินจำเป็นใน payload (event อยู่ในคิว/log นาน)
-- ⏳ outbox pattern: ตอน PoC publish ตรงหลัง commit (อาจหายถ้า service ล่มระหว่างนั้น) — บันทึกเป็น MOCK เมื่อเริ่มเขียน
+- ⏳ outbox pattern: ตอน PoC publish ตรงหลัง commit (อาจหายถ้า service ล่มระหว่างนั้น) — [MOCK-005](MOCKS.md)
+- ทำแล้ว (TASK-002): publisher ใช้ confirm channel + `persistent` + `messageId = eventId` · notification ใช้ queue `notification.events` → DLQ `notification.events.dlq` ผ่าน exchange `supertrees.events.dlx` (direct) · กันซ้ำด้วยตาราง `notify.processed_events`
 
 ## ทะเบียน
 
@@ -33,3 +34,8 @@
 | `listing.listing.published` | listing | notification | `listingId, parcelId, price` | ⏳ |
 | `listing.listing.sold` | listing | notification | `listingId` | ⏳ |
 | `garden.planting.added` | garden | notification | `plantingId, parcelId, speciesCode, count` | ⏳ |
+| `garden.tree-survey.completed` | garden | notification (log) | `surveyId, parcelId, treeCount` — TASK-010 | 🟡 |
+| `garden.planting-plan.created` | garden | — (ยังไม่มี consumer) | `planId, parcelId, treeCount` — บันทึกแผนปลูก (TASK-011) | 🟡 |
+| `garden.planting-plan.updated` | garden | — (ยังไม่มี consumer) | `planId, parcelId, treeCount` — แก้ไขแผนปลูกแล้วบันทึก (TASK-011) | 🟡 |
+| `garden.tree-survey.updated` | garden | — (ยังไม่มี consumer) | `surveyId, parcelId, treeCount` — ผู้ใช้แก้จุด/กริดแล้วบันทึก (TASK-010) | 🟡 |
+| `system.service.started` | ทุก service (ตอนเริ่ม) | notification (log) | `service` — ทดสอบเส้นทาง event (TASK-002) | 🟡 |

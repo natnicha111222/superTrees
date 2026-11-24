@@ -4,19 +4,22 @@
 
 ## ภาพรวม
 
-**superTrees (PoC)** = แอปมือถือ + เว็บ สำหรับ**ซื้อ-ขาย/วิเคราะห์ที่ดินบนแผนที่** (แปลงเป็น polygon, หมุดราคา, วัดพื้นที่/เส้นรอบรูป/ความชัน/เส้นชั้นความสูง, กรองตามราคา/ขนาด/ประเภทเอกสารสิทธิ์) **+ จัดการต้นไม้/สวนบนแปลง** (ปลูกอะไร ตรงไหน กี่ต้น อายุเท่าไร ประเมินมูลค่า/คาร์บอน)
+**superTrees (PoC)** = เว็บแอป (มือถือทำภายหลัง) สำหรับ**ซื้อ-ขาย/วิเคราะห์ที่ดินบนแผนที่** (แปลงเป็น polygon, หมุดราคา, วัดพื้นที่/เส้นรอบรูป/ความชัน/เส้นชั้นความสูง, กรองตามราคา/ขนาด/ประเภทเอกสารสิทธิ์) **+ จัดการต้นไม้/สวนบนแปลง** (ปลูกอะไร ตรงไหน กี่ต้น อายุเท่าไร ประเมินมูลค่า/คาร์บอน)
 
 แนวคิดคล้ายแอปตลาดที่ดินในไทยที่มีอยู่แล้ว แต่**ชื่อ แบรนด์ ข้อความ ภาพ ไอคอน เป็นของเราเองทั้งหมด ห้ามลอกของแอปอื่น**
 
-## ⚠️ ข้อมูลลับ/sensitive data ห้ามอ่านเอง (กฎตายตัว)
+## 🔑 ค่าลับ (secrets)
 
-**ห้ามเปิดอ่าน/เขียนค่าจริงของ** Supabase `service_role`/secret key, JWT secret/signing key, รหัส DB, รหัส RabbitMQ, API key (AI, แผนที่) ไม่ว่าจะอยู่ใน `.env`, `supabase/.env`, `kong.yml` ที่ใส่ค่าจริง หรือที่ใดก็ตาม — ช่วยได้แค่บอกว่าต้องใส่ที่ไฟล์ไหน ตัวแปรอะไร รูปแบบไหน แล้วให้ผู้ใช้กรอกเอง · ไฟล์ตัวอย่างใช้ `CHANGE_ME` เสมอ
+- Claude สร้าง/กรอกค่าลับลง `.env` ของ **local dev** ได้ (ผู้ใช้อนุญาต 2026-11-23) — ค่าที่ Claude เห็นจะอยู่ในบันทึกการสนทนา จึง**ค่าของ dev กลาง/uat/prod ให้ผู้ใช้สร้างเอง**
+- ห้าม commit `.env` / ค่าลับ · ไฟล์ตัวอย่าง (`.env.example`) ใช้ `CHANGE_ME` เสมอ · ห้าม hardcode ค่าลับในโค้ด
+- `service_role`/secret key ใช้ฝั่ง server เท่านั้น ห้ามอยู่ในหน้าบ้าน
 
 `anon`/publishable key ฝังในแอปได้ (เป็นค่าสาธารณะโดยออกแบบ) แต่ตารางที่เข้าถึงด้วย key นี้ได้ต้องเปิด RLS เสมอ
 
 ## ⚠️ โครงสร้าง DB เปลี่ยนผ่าน migration เท่านั้น (กฎตายตัว)
 
 - เปลี่ยน schema = ไฟล์ migration ของ Drizzle (`drizzle-kit generate`) **ใน repo ของ service เจ้าของ schema เท่านั้น** · ห้ามแก้ตารางผ่าน Supabase Studio · ห้าม `drizzle-kit push` กับ DB ที่ใช้ร่วมกัน (dev กลาง/uat/prod) · ห้ามแก้ไฟล์ migration ที่ apply ไปแล้ว ให้เขียนตัวใหม่
+- drizzle: migration แรกของ service ใหม่ต้องเป็น `CREATE SCHEMA IF NOT EXISTS` ([BUG-001](bugs/BUG-001.md)) · คอลัมน์ geometry ใช้ `customType` ที่ระบุ `geometry(Point|MultiPolygon, 4326)` เอง แล้วตรวจ DDL ([BUG-002](bugs/BUG-002.md))
 - migration ที่ทำข้อมูลหาย (`DROP`, `RENAME`, เปลี่ยน type, `NOT NULL` กับคอลัมน์ที่มีข้อมูล) **ต้องให้ผู้ใช้ยืนยันก่อน** และห้าม apply เองกับ DB ที่ไม่ใช่ local
 - schema `auth`/`storage`/`realtime` ของ Supabase ห้ามแก้ ห้ามสร้างตารางเพิ่มในนั้น
 
@@ -58,9 +61,10 @@
 ## Multirepo
 
 - `D:\superTrees` = repo **workspace** (เอกสารกลางเท่านั้น ไม่มีโค้ด) · โฟลเดอร์ `st-*` แต่ละตัวเป็น **git repo แยก** (root `.gitignore` ignore ไว้)
-- **ห้ามทำเป็น monorepo/workspaces** (npm/bun/nx workspaces) และห้าม import ข้าม repo ด้วย path สัมพัทธ์ (`../st-xxx`) — ของร่วมใช้ผ่าน package ที่มีเวอร์ชัน (`@supertrees/contracts`, `@supertrees/shared-ui`) ติดตั้งด้วย tarball หรือ private registry **ห้าม `file:`/symlink** (Angular DI แตกเป็น 2 ชุด → `NG0203`)
+- **ห้ามทำเป็น monorepo/workspaces** (npm/bun/nx workspaces) และห้าม import ข้าม repo ด้วย path สัมพัทธ์ (`../st-xxx`) — ของร่วมใช้ผ่าน package ที่มีเวอร์ชัน (`@supertrees/contracts`, `@supertrees/shared-ui`) ติดตั้งจาก **tarball ใน `vendor/` ของ repo นั้น** (`npm run pack:vendor` ใน repo ต้นทาง) · **ห้าม `file:` ชี้โฟลเดอร์/symlink** (Angular DI แตกเป็น 2 ชุด → `NG0203`) · แก้ package ร่วมแล้วต้องขึ้นเวอร์ชันเสมอ
 - งานที่แก้หลาย repo: ระบุ repo + ลำดับ release ในไฟล์ task (contracts → services → shared-ui → remotes → shell) · contract เปลี่ยนแบบ breaking = major version
 - commit แยกตาม repo · commit/push เฉพาะเมื่อผู้ใช้สั่ง
+- รัน dev ทุก repo พร้อมกัน: `cd st-infra && npm run dev:backend` / `dev:frontend` — ทุก repo ที่รันได้ต้องมี script `dev` ที่ฟัง env `PORT` · เพิ่ม/ย้าย repo หรือ port = แก้ `REPOS` ใน `st-infra/scripts/dev.mjs` ด้วย
 
 ## สถาปัตยกรรม (ย่อ — ละเอียดที่ [ARCHITECTURE.md](ARCHITECTURE.md))
 
@@ -87,16 +91,18 @@
 - เก็บพื้นที่เป็น **ตร.ม.**, ระยะเป็น **เมตร**, ราคาเป็น **`numeric`/จำนวนเต็มสตางค์** (ห้าม float) · **ไร่-งาน-ตร.วา** (1 ไร่ = 1,600 ตร.ม. · 1 งาน = 400 ตร.ม. · 1 ตร.วา = 4 ตร.ม.) **มีแค่ตอนแสดงผล/รับค่า** ผ่าน pipe/ฟังก์ชันกลางใน shared-ui
 - เวลาเก็บ `timestamptz` รับ/ส่งเป็น ISO-8601 UTC (`...Z`) · **พ.ศ./เวลาไทยมีแค่ตอนแสดงผล** ผ่าน pipe กลาง ห้าม `+ 543` เองในหน้า
 
-## หน้าบ้าน (Ionic + Angular + Capacitor + Native Federation)
+## หน้าบ้าน (Ionic + Angular + Native Federation — เว็บก่อน)
 
-- **Angular 21+ standalone + signals**, Ionic standalone components, Capacitor · `st-shell` = host (layout, tabs/menu, login, routing, โหลด remote) · `st-mfe-*` = remote 1 ตัวต่อโดเมน
+- **ระยะนี้ทำเว็บอย่างเดียว** (ผู้ใช้ตัดสินใจ 2026-11-23): **ยังไม่ติดตั้ง Capacitor ไม่สร้าง `android/` `ios/`** · ห้ามใช้ plugin/API ที่มีแค่บน native · เขียนให้ responsive ใช้บนเบราว์เซอร์มือถือได้ · งานมือถือพักไว้ที่ [TASK-009](tasks/TASK-009.md)
+- **Angular 22.2 standalone + signals (zoneless)**, Ionic 9 — import component จาก `@ionic/angular` (ไม่มี `/standalone` แล้ว) · `st-shell` = host (layout, tabs/menu, login, routing, โหลด remote) · `st-mfe-*` = remote 1 ตัวต่อโดเมน
 - **เวอร์ชัน Angular / Ionic / `@angular-architects/native-federation` / rxjs / `@supertrees/shared-ui` ต้องตรงกันทุก repo หน้าบ้าน** และ share เป็น singleton (strict) — อัปเกรดต้องทำพร้อมกันทุก repo ตามตารางเวอร์ชันใน [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
 - **remote ห้าม import ของกันและกัน** · ข้อมูลข้าม remote ผ่าน route param หรือ service กลางใน shared-ui · remote ไม่ทำ login เอง ใช้ session จาก shell
 - ใช้ component ของ Ionic + ของกลางใน shared-ui ห้ามเขียนซ้ำในหน้า · **ห้ามใส่รหัสสีเอง** ใช้ token ใน `st-shared-ui/THEME.md` · ไอคอนใช้ ionicons
 - การโหลดที่ยิงซ้ำได้ (ค้นหา, เลื่อน/ซูมแผนที่) ต้อง**ยกเลิก request ที่ค้างก่อนยิงใหม่** (`switchMap`/`rxResource`) + debounce การเลื่อนแผนที่
 - base URL ของ API มาจาก environment/runtime config (บนมือถือไม่มี dev proxy) ห้าม hardcode host ในโค้ด
-- ก่อนทำ build มือถือที่ใช้ federation อ่าน [CONF-001](conf/CONF-001.md)
+- แผนที่ใช้ **MapLibre GL** · แหล่ง tile อยู่ใน runtime config (`map`) ห้าม hardcode · แสดง attribution เสมอ ([CONF-006](conf/CONF-006.md))
+- เมื่อเริ่มทำมือถือ (TASK-009) อ่าน [CONF-001](conf/CONF-001.md) ก่อน
 
 ## สถานะ (อย่าสันนิษฐานว่ามีของจริงแล้ว)
 
-- 2026-11-23: วางเอกสาร + โฟลเดอร์ repo ว่าง (TASK-001) — **ยังไม่มีโค้ดใน repo ใดเลย** · ขั้นต่อไป TASK-002 (โครง hello-world ทุก repo)
+- 2026-11-23: โครงทุก repo เสร็จ (TASK-002 ✅) + นับต้นไม้จากภาพ (TASK-010 🟡 — e2e ด้วยภาพจำลองผ่าน) — รันครบบน local แล้ว (`.env` local ตั้งแล้ว) · ยังไม่มี login (TASK-003, CONF-002 เปิดอยู่ — ใช้ MOCK-002 ตอน local) · ทำเว็บก่อน มือถือพักไว้ (TASK-009) · ของจำลองทั้งหมดดู [MOCKS.md](MOCKS.md)
